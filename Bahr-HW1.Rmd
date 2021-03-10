@@ -1,0 +1,141 @@
+---
+title: "HW1"
+author: "Audrey Bahr"
+date: "March 10, 2021"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r}
+library(tidyverse)
+```
+
+**Challenge 1**
+
+This challenge involves string manipulation on the last chapter of Charles Darwin's "On the Origin of Species."
+```{r}
+darwin <- read.delim("darwin.txt", comment.char="#", stringsAsFactors=FALSE)
+```
+
+```{r}
+darwin_vec <- darwin$CHAPTER.XV..RECAPITULATION.AND.CONCLUSION.
+
+# print number of paragraphs
+print(length(darwin_vec))
+
+# print 34th paragraph
+print(darwin_vec[34])
+
+# split vector of paragraphs into a vector of words
+darwin_split <- strsplit(darwin_vec, " ") %>% unlist()
+# remove punctuation
+darwin_splitpunct <- gsub("[[:punct:]]","", darwin_split)
+
+# count number of different words
+length(unique(darwin_splitpunct))
+
+# find most common word
+row <- which.max(data.frame(table(darwin_splitpunct))$Freq)
+data.frame(table(darwin_splitpunct))[row,]
+
+# words that appear a certain number of times
+sum(data.frame(table(darwin_splitpunct))$Freq == 1)
+sum(data.frame(table(darwin_splitpunct))$Freq >= 5) 
+
+# last paragraph
+final_quote <- darwin_vec[56]
+split_quote <- strsplit(final_quote, " ") %>% unlist()
+
+# extract every third word
+every_third <- split_quote[seq(3, length(split_quote), by = 3)]
+print(every_third)
+
+# sort by reverse alphabetical order
+every_third <- gsub("[[:punct:]]","", every_third)
+every_third <- sort(every_third, TRUE)
+
+print(every_third)
+```
+
+There are 56 paragraphs and 2,058 unique words in this vector. "The" is the most common word in this chapter, appearing 718 times. There are 1071 words that appear only once, and 369 words that appear five times or more. Punctuation was removed when the frequency of words were counted, because otherwise words with punctuation attached are counted as different (e.g. condition != condition,).
+
+**Challenge 2**
+
+Average high temperatures in January for six cities.
+```{r}
+t <- c(35, 88, 42, 84, 81, 30)
+city <- c("Beijing", "Lagos", "Paris", "Rio de Janeiro", "San Juan", "Toronto")
+
+names(t) <- city
+
+t[1:3]
+t[c("Paris", "San Juan")]
+```
+
+**Challenge 3**
+
+Matrix manipulation.
+
+```{r}
+m1 <- matrix(data = sort(c(0:159), TRUE), nrow = 8, ncol = 20)
+print(m1[5,2])
+print(m1[5:7,])
+
+m2 <- m1[3:6,4:9]
+class(m2)
+mode(m2)
+```
+The new object, m2, is a matrix of mode numeric.
+
+**Challenge 4**
+
+Array manipulation.
+
+```{r}
+a <- array(sort(seq(2, 800, 2), TRUE), dim = c(5, 5, 4, 4))
+
+a[1, 1, 1, 2]
+a[2, 3, 2, ]
+a[1:5, 1:5, 3, 3]
+```
+
+**Challenge 5**
+
+Simplified primate taxonomy represented by a multidimensional list.
+
+```{r}
+# superfamilies
+Lorisoidea <- c("Lorisidae", "Galagidae")
+Lemuroidea <- c("Cheirogaleidae", "Lepilemuridae", "Indriidae", "Lemuridae", "Daubentoniidae")
+Tarsioidea <- c("Tarsiidae")
+Ceboidea <- c("Cebidae", "Atelidae", "Pitheciidae")
+Hominoidea <- c("Hylobatidae", "Hominidae")
+Cercopithecoidea <- c("Cercopithecidae")
+
+# parvorders
+Catarrhini <- list("Superfamily Hominoidea" = Hominoidea, "Superfamily Cercopithecoidea" = Cercopithecoidea)
+Platyrrhini = list("Superfamily Ceboidea" = c(Ceboidea))
+
+# infraorders
+Lorisiformes = list("Superfamily Lorisoidea" = (Lorisoidea))
+Lemuriformes = list("Superfamily Lemuroidea" = (Lemuroidea))
+Tarsiiformes = list("Superfamily Tarsioidea" = (Tarsioidea))
+Simiiformes = list("Parvorder: Platyrrhini" = Platyrrhini, "Parvorder: Catarrhini" = Catarrhini)
+
+# suborders
+Strepsirhini = list("Infraorder: Lorisiformes" = Lorisiformes, "Infraorder: Lemuriformes" = Lemuriformes)
+Haplorhini = list("Infraorder: Tarsiiformes" = (Tarsiiformes), "Infraorder: Simiiformes" = Simiiformes)
+
+# all together
+Primates = list("Suborder: Strepsirhini" = Strepsirhini, "Suborder: Haplorhini" = Haplorhini)
+
+# extract elements
+platyrrhines <- Primates[[2]][[2]][1]
+class(platyrrhines)
+mode(platyrrhines)
+
+Primates$`Suborder: Haplorhini`$`Infraorder: Tarsiiformes`$`Superfamily Tarsioidea`
+```
+
+The class and mode of platyrrhines are both list.
